@@ -4,10 +4,8 @@ import logging
 from aiohttp import web
 from telegram import Update
 from telegram.ext import (
-    Application,
-    CallbackQueryHandler,
-    ChatMemberHandler,
-    CommandHandler,
+    Application, CallbackQueryHandler, ChatMemberHandler,
+    CommandHandler, MessageHandler, filters,
 )
 
 import config
@@ -22,8 +20,18 @@ logging.basicConfig(
 log = logging.getLogger("bellamy")
 
 
+async def on_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    from handlers_product import handle_quantity_input
+    from handlers_admin import handle_admin_creds
+
+    if await handle_admin_creds(update, context):
+        return
+    if await handle_quantity_input(update, context):
+        return
+    # fallback silencioso (não responder texto solto)
+
+
 async def resolve_chat_ids(app: Application) -> None:
-    """Converte @username → ID numérico para comparar com chat_member."""
     async def _resolve(ref: str) -> int | None:
         if not ref:
             return None
@@ -38,11 +46,8 @@ async def resolve_chat_ids(app: Application) -> None:
 
     config.CHANNEL_NUMERIC_ID = await _resolve(config.OFFICIAL_CHANNEL_ID)
     config.GROUP_NUMERIC_ID = await _resolve(config.OFFICIAL_GROUP_ID)
-    log.info(
-        "IDs resolvidos → canal=%s | grupo=%s",
-        config.CHANNEL_NUMERIC_ID,
-        config.GROUP_NUMERIC_ID,
-    )
+    log.info("IDs resolvidos → canal=%s | grupo=%s",
+             config.CHANNEL_NUMERIC_ID, config.GROUP_NUMERIC_ID)
 
 
 async def main() -> None:
@@ -52,15 +57,34 @@ async def main() -> None:
         raise RuntimeError("WEBHOOK_URL não configurado.")
 
     await init_db()
-
     app = Application.builder().token(config.BOT_TOKEN).build()
 
+    # Comandos
     app.add_handler(CommandHandler("start", cmd_start))
     app.add_handler(CommandHandler("cancelar", cmd_cancelar))
-    app.add_handler(CallbackQueryHandler(on_callback))
-    app.add_handler(
-        ChatMemberHandler(on_chat_member, ChatMemberHandler.CHAT_MEMBER)
+
+    # Admin rápido (temporário - módulos finais trazem o painel completo)
+    from handlers_admin import (
+        cmd_addcat, cmd_addcreds, cmd_addprod, cmd_admin,
+        cmd_delcat, cmd_delprod, cmd_listcats, cmd_listprods,
     )
+    app.add_handler(CommandHandler("admin", cmd_admin))
+    app.add_handler(CommandHandler("listcats", cmd_listcats))
+    app.add_handler(CommandHandler("listprods", cmd_listprods))
+    app.add_handler(CommandHandler("addcat", cmd_addcat))
+    app.add_handler(CommandHandler("addprod", cmd_addprod))
+    app.add_handler(CommandHandler("addcreds", cmd_addcreds))
+    app.add_handler(CommandHandler("delprod", cmd_delprod))
+    app.add_handler(CommandHandler("delcat", cmd_delcat))
+
+    # Callbacks de botões
+    app.add_handler(CallbackQueryHandler(on_callback))
+
+    # Mensagens de texto (quantity / admin creds)
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, on_text))
+
+    # ChatMember (liberação automática)
+    app.add_handler(ChatMemberHandler(on_chat_member, ChatMemberHandler.CHAT_MEMBER))
 
     await app.initialize()
     await app.start()
@@ -78,8 +102,7 @@ async def main() -> None:
     async def webhook_handler(request: web.Request) -> web.Response:
         try:
             data = await request.json()
-            update = Update.de_json(data, app.bot)
-            await app.process_update(update)
+            await app.process_update(Update.de_json(data, app.bot))
         except Exception as e:
             log.exception("Erro processando update: %s", e)
         return web.Response(text="OK")
