@@ -6,6 +6,7 @@ from database import get_setting
 
 
 DEFAULT_TEXTS = {
+    # -------- módulo 1 --------
     "access_restricted": (
         "🔒 <b>ACESSO RESTRITO</b>\n\n"
         "Para utilizar nossos serviços, é necessário participar dos nossos "
@@ -37,6 +38,121 @@ DEFAULT_TEXTS = {
         "A operação foi encerrada com sucesso.\n\n"
         "Você poderá iniciar uma nova operação quando desejar."
     ),
+
+    # -------- módulo 2 — catálogo --------
+    "catalog_header": (
+        "🎟️ <b>𝗖𝗔𝗧𝗔𝗟𝗢𝗚𝗢 𝗗𝗘 𝗔𝗖𝗘𝗦𝗦𝗢𝗦</b>\n\n"
+        "◆ ━━━━━━━━❪✪❫━━━━━━━━ ◆\n\n"
+        "👤 | Conta: {username}\n"
+        "🆔 | Identificação: {user_id}\n"
+        "💰 | Seu saldo: R$ {saldo}\n\n"
+        "◆ ━━━━━━━━❪✪❫━━━━━━━━ ◆\n\n"
+        "<b>𝗟𝗢𝗚𝗜𝗡𝗦 • 𝗖𝗢𝗡𝗧𝗔𝗦 • 𝗧𝗘𝗟𝗔𝗦</b>\n\n"
+        "◆ ━━━━━━━━❪✪❫━━━━━━━━ ◆\n\n"
+        "👇 Selecione uma das opções disponíveis para continuar:"
+    ),
+    "catalog_empty": (
+        "😕 <b>Nenhuma categoria disponível</b>\n\n"
+        "Volte mais tarde!"
+    ),
+    "category_empty": "😕 Nenhum produto disponível nesta categoria no momento.",
+
+    # -------- detalhe do produto --------
+    "product_detail": (
+        "🛍️ <b>CONFIRA OS DETALHES DO PRODUTO</b>\n\n"
+        "🔹 | Serviço: {nome_produto}\n\n"
+        "✨ | Preço: R$ {preco}\n\n"
+        "💳 | Saldo disponível: R$ {saldo}\n\n"
+        "📦 | Estoque disponível: {estoque}\n\n"
+        "🔎 <b>INFORMAÇÕES DO PRODUTO:</b>\n\n"
+        "{descricao}\n\n"
+        "👀 {visualizacoes} pessoas visualizando este serviço."
+    ),
+
+    # -------- confirmação / cancelamento / sucesso --------
+    "purchase_confirm": (
+        "🛍️ <b>CONFIRME SEU PEDIDO</b>\n\n"
+        "📦 Produto: {produto}\n\n"
+        "🔢 Quantidade: {quantidade}\n\n"
+        "💰 Valor total: R$ {total}\n\n"
+        "💳 Saldo atual: R$ {saldo}\n\n"
+        "💸 Saldo após compra: R$ {saldo_final}\n\n"
+        "Deseja confirmar esta compra?"
+    ),
+    "purchase_cancelled": (
+        "❌ <b>COMPRA CANCELADA!</b>\n\n"
+        "Sua compra foi cancelada com sucesso.\n\n"
+        "Nenhum valor foi descontado da sua carteira."
+    ),
+
+    # -------- compra por quantidade --------
+    "qty_prompt": (
+        "📦 <b>QUANTOS LOGINS DESEJA COMPRAR?</b>\n\n"
+        "📊 Estoque disponível: {estoque}\n\n"
+        "💡 Digite a quantidade desejada.\n\n"
+        "Para cancelar a operação, digite /cancelar."
+    ),
+    "qty_invalid": "⚠️ Valor inválido.\n\nDigite apenas números (ex.: 1, 2, 3).",
+    "qty_below_min": "⚠️ Quantidade abaixo do mínimo permitido: {min}",
+    "qty_above_max": "⚠️ Quantidade acima do máximo permitido: {max}",
+    "qty_above_stock": "⚠️ Estoque insuficiente. Disponíveis: {available}",
+    "qty_insufficient_balance": (
+        "❌ <b>SALDO INSUFICIENTE!</b>\n\n"
+        "🛍️ Produto: {produto}\n\n"
+        "📦 Quantidade: {quantidade}\n\n"
+        "💰 Seu saldo: R$ {saldo}\n\n"
+        "💵 Valor total: R$ {total}\n\n"
+        "📉 Faltam: R$ {faltante}\n\n"
+        "Deseja gerar um PIX para completar sua compra?"
+    ),
+
+    # -------- entrega --------
+    "delivery_hidden": (
+        "📦 Item {atual}/{total} — {produto}\n\n"
+        "📧 E-mail: {email_masked}\n"
+        "🔑 Senha: {senha_masked}"
+    ),
+    "delivery_visible": (
+        "📦 Item {atual}/{total} — {produto}\n\n"
+        "📧 E-mail: <code>{email}</code>\n"
+        "🔑 Senha: <code>{senha}</code>"
+    ),
+
+    # -------- carrinho --------
+    "cart_empty": (
+        "🛒 <b>Seu carrinho está vazio</b>\n\n"
+        "Adicione produtos para começar!"
+    ),
+    "cart_header": (
+        "🛒 <b>MEU CARRINHO</b>\n\n"
+        "Confira seus produtos antes de finalizar.\n\n"
+        "{lista}\n\n"
+        "📦 Total de unidades: {quantidade_total}\n\n"
+        "💰 Valor total: R$ {valor_total}\n\n"
+        "💳 Seu saldo: R$ {saldo}"
+    ),
+    "cart_item_line": "• {nome} — {qtd}x — R$ {subtotal}",
+    "cart_remove_screen": (
+        "🗑️ <b>REMOVER PRODUTO</b>\n\n"
+        "{lista}\n\n"
+        "Selecione o produto que deseja remover:"
+    ),
+    "cart_finalize_confirm": (
+        "🛍️ <b>CONFIRME SUA COMPRA</b>\n\n"
+        "{lista}\n\n"
+        "📦 Total de unidades: {quantidade_total}\n\n"
+        "💰 Valor total: R$ {valor_total}\n\n"
+        "💳 Saldo atual: R$ {saldo}\n\n"
+        "💸 Saldo após compra: R$ {saldo_final}\n\n"
+        "Deseja confirmar esta compra?"
+    ),
+    "cart_insufficient_balance": (
+        "❌ <b>SALDO INSUFICIENTE!</b>\n\n"
+        "💰 Valor total: R$ {total}\n\n"
+        "💳 Seu saldo: R$ {saldo}\n\n"
+        "📉 Faltam: R$ {faltante}\n\n"
+        "Deseja gerar um PIX para completar sua compra?"
+    ),
 }
 
 
@@ -50,7 +166,6 @@ def get_greeting() -> str:
 
 
 def safe_format(template: str, **kwargs) -> str:
-    """Substitui {chave} preservando chaves ausentes (evita KeyError)."""
     def repl(m):
         key = m.group(1)
         return str(kwargs.get(key, m.group(0)))
